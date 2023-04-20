@@ -2,24 +2,28 @@
 #include <cstdlib>
 #include "LinkedList.h"
 
-using namespace std;
-
 int main(int argc, char const *argv[])
 {
-  LinkedList<bool> boolList;
-  boolList.print();
+  LinkedList<int> list;
 
-  LinkedList<string> strList;
-  strList.add("Hello");
-  cout << strList.get(0) << endl;
-  strList.print();
+  // Add few items to the end of LinkedList
+  list.push_back(1);
+  list.push_back(2);
+  list.push_back(3);
 
-  LinkedList<int> numberList;
-  numberList.add(4);
-  numberList.add(2);
-  cout << numberList.get(0) << endl;
-  cout << numberList[1] << endl;
-  numberList.print();
+  std::cout << "Size: " << list.size() << std::endl;
+
+  std::cout << "Traversing LinkedList through method:" << std::endl;
+  list.print();
+
+  std::cout << "Traversing LinkedList through Iterator:" << std::endl;
+  for (LinkedList<int>::Iterator iterator = list.begin();
+       iterator != list.end(); iterator++)
+  {
+    std::cout << *iterator << " ";
+  }
+
+  std::cout << std::endl;
 
   return EXIT_SUCCESS;
 }

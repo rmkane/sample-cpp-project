@@ -11,7 +11,7 @@ INC_DIR     := include
 DIST_DIR    := dist
 
 # Flags, Libraries and Includes
-CFLAGS      := -Wall -pedantic -ansi -I$(INC_DIR)
+CFLAGS      := -Wall -pedantic -ansi -std=c++11 -I$(INC_DIR)
 LDFLAGS     := -I$(INC_DIR)
 
 # Do not modify below...

@@ -1,130 +1,187 @@
 #ifndef LinkedList_h
 #define LinkedList_h
 
-using namespace std;
-
-// Declaring node class
-template <typename TData>
-struct Node
-{
-    Node<TData> *next;
-    TData data;
-};
-
-template <typename TData>
+template <typename T>
 class LinkedList
 {
-private:
-    Node<TData> *head;
-    Node<TData> *last;
+    // Forward declaration
+    class Node;
 
 public:
-    LinkedList<TData>();
-    void add(TData data);
-    TData get(int index);
-    TData operator[](int index);
+    LinkedList<T>() noexcept
+    {
+        // caution: static members can't be
+        // initialized by initializer list
+        m_spRoot = nullptr;
+    }
+
+    // Forward declaration must be done
+    // in the same access scope
+    class Iterator;
+
+    // Root of LinkedList wrapped in Iterator type
+    Iterator begin()
+    {
+        return Iterator(m_spRoot);
+    }
+
+    // End of LinkedList wrapped in Iterator type
+    Iterator end()
+    {
+        return Iterator(nullptr);
+    }
+
+    // Check if list is empty
+    bool is_empty();
+
+    // Size of list
+    int size();
+
+    // Adds data to the end of list
+    void push_back(T data);
+
+    // Print the list
     void print();
+
+    // Iterator class can be used to
+    // sequentially access nodes of linked list
+    class Iterator
+    {
+    public:
+        Iterator() noexcept : m_pCurrentNode(m_spRoot) {}
+
+        Iterator(const Node *pNode) noexcept : m_pCurrentNode(pNode) {}
+
+        Iterator &operator=(Node *pNode)
+        {
+            this->m_pCurrentNode = pNode;
+            return *this;
+        }
+
+        // Prefix ++ overload
+        Iterator &operator++()
+        {
+            if (m_pCurrentNode)
+                m_pCurrentNode = m_pCurrentNode->pNext;
+            return *this;
+        }
+
+        // Postfix ++ overload
+        Iterator operator++(int)
+        {
+            Iterator iterator = *this;
+            ++*this;
+            return iterator;
+        }
+
+        bool operator!=(const Iterator &iterator)
+        {
+            return m_pCurrentNode != iterator.m_pCurrentNode;
+        }
+
+        int operator*()
+        {
+            return m_pCurrentNode->data;
+        }
+
+    private:
+        const Node *m_pCurrentNode;
+    };
+
+private:
+    class Node
+    {
+        T data;
+        Node *pNext;
+
+        // LinkedList class methods need
+        // to access Node information
+        friend class LinkedList;
+    };
+
+    // Create a new Node
+    Node *GetNode(T data)
+    {
+        Node *pNewNode = new Node;
+        pNewNode->data = data;
+        pNewNode->pNext = nullptr;
+
+        return pNewNode;
+    }
+
+    // Return by reference so that it can be used in
+    // left hand side of the assignment expression
+    Node *&GetRootNode()
+    {
+        return m_spRoot;
+    }
+
+    static Node *m_spRoot;
 };
 
-template <typename TData>
-LinkedList<TData>::LinkedList()
+template <typename T>
+/*static*/ typename LinkedList<T>::Node *LinkedList<T>::m_spRoot = nullptr;
+
+template <typename T>
+bool LinkedList<T>::is_empty()
 {
-    this->head = NULL;
-    this->last = NULL;
+    return m_spRoot != NULL;
 }
 
-template <typename TData>
-void LinkedList<TData>::add(TData data)
+template <typename T>
+int LinkedList<T>::size()
 {
-    if (!this->head)
+    int count = 0;
+    Node *pCrawler = GetRootNode();
+
+    while (pCrawler)
     {
-        // When there is no element in the list
-        this->head = new Node<TData>;
-        this->head->data = data;
-        this->head->next = NULL;
-        this->last = head;
+        count += 1;
+        pCrawler = pCrawler->pNext;
+    }
+
+    return count;
+}
+
+template <typename T>
+void LinkedList<T>::push_back(T data)
+{
+    Node *pTemp = GetNode(data);
+    if (!is_empty())
+    {
+        GetRootNode() = pTemp;
     }
     else
     {
-        // When the list is not empty
-        if (this->last == this->head)
+        Node *pCrawler = GetRootNode();
+        while (pCrawler->pNext)
         {
-            // When the list has one element
-            this->last = new Node<TData>;
-            this->last->data = data;
-            this->last->next = NULL;
-            this->head->next = this->last;
+            pCrawler = pCrawler->pNext;
         }
-        else
-        {
-            // When the list has more than one element
-            Node<TData> *insdata = new Node<TData>;
-            insdata->data = data;
-            insdata->next = NULL;
-            this->last->next = insdata;
-            this->last = insdata;
-        }
+
+        pCrawler->pNext = pTemp;
     }
 }
 
-template <typename TData>
-TData LinkedList<TData>::get(int index)
+template <typename T>
+void LinkedList<T>::print()
 {
-    if (index == 0)
+    Node *pCrawler = GetRootNode();
+
+    std::cout << "[";
+
+    while (pCrawler)
     {
-        // Returning the head element
-        return this->head->data;
-    }
-    else
-    {
-        // Get the index'th element
-        Node<TData> *curr = this->head;
-        for (int i = 0; i < index; ++i)
+        std::cout << pCrawler->data;
+        pCrawler = pCrawler->pNext;
+
+        if (pCrawler != nullptr)
         {
-            curr = curr->next;
-        }
-        return curr->data;
-    }
-}
-
-template <typename TData>
-TData LinkedList<TData>::operator[](int index)
-{
-    return get(index);
-}
-
-template <typename TData>
-void LinkedList<TData>::print()
-{
-    if (this->head == NULL)
-    {
-        cout << "List is empty" << endl;
-        return;
-    }
-
-    if (this->head == this->last)
-    {
-        cout << "[" << this->head->data << "]" << endl;
-        return;
-    }
-
-    Node<TData> *curr = this->head;
-
-    cout << "[" << curr->data << ", ";
-    curr = curr->next;
-
-    while (curr != NULL)
-    {
-        cout << curr->data;
-        curr = curr->next;
-
-        if (curr != NULL)
-        {
-            cout << ", ";
+            std::cout << ", ";
         }
     }
 
-    cout << "]" << endl;
+    std::cout << "]" << std::endl;
 }
 
 #endif // LinkedList_h
