@@ -1,5 +1,7 @@
-#ifndef LinkedList_h
-#define LinkedList_h
+#ifndef LINKED_LIST_H_
+#define LINKED_LIST_H_
+
+#include <iostream>
 
 template <typename T>
 class LinkedList
@@ -175,7 +177,7 @@ void LinkedList<T>::print()
         std::cout << pCrawler->data;
         pCrawler = pCrawler->pNext;
 
-        if (pCrawler != nullptr)
+        if (pCrawler)
         {
             std::cout << ", ";
         }
@@ -184,4 +186,4 @@ void LinkedList<T>::print()
     std::cout << "]" << std::endl;
 }
 
-#endif // LinkedList_h
+#endif // LINKED_LIST_H_
