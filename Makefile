@@ -18,17 +18,17 @@ LDFLAGS     := -I$(INC_DIR)
 OBJ_DIR     := $(DIST_DIR)/obj
 TARGET      := $(DIST_DIR)/$(PROJECT)
 
-SRCS        := $(shell find $(SRC_DIR) -name *.cc)
-OBJS        := $(patsubst %.cc,$(OBJ_DIR)/%.o,$(SRCS))
+SRCS        := $(shell find $(SRC_DIR) -name *.cpp)
+OBJS        := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
-SRC_DIRS    := $(shell find . -name *.cc -exec dirname {} \; | uniq)
+SRC_DIRS    := $(shell find . -name *.cpp -exec dirname {} \; | uniq)
 
 all: $(TARGET)
 
 $(TARGET) : build-repo $(OBJS)
 	$(CXX) $(OBJS) $(LDFLAGS) -o $@
 
-$(OBJ_DIR)/%.o: %.cc
+$(OBJ_DIR)/%.o: %.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@
 
 clean:
